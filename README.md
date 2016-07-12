@@ -2,10 +2,10 @@
 
 [![Build Status](https://travis-ci.org/Rogaland/spring-hateoas-hal-extension.svg?branch=master)](https://travis-ci.org/Rogaland/spring-hateoas-hal-extension)
 
-Small extension to Spring HATEOAS that enables HAL collections.
+Small extension to Spring HATEOAS that enables HAL collections.  
+Go to the [reference documentation](http://rogaland.github.io/spring-hateoas-hal-extension) for detailed information.
 
 ## Links
-- [Reference Documentation](http://rogaland.github.io/spring-hateoas-hal-extension)
 - [Apigility - HAL](https://apigility.org/documentation/api-primer/halprimer)
 - [Spring HATEOAS Reference Documentation](http://docs.spring.io/spring-hateoas/docs/current/reference/html)
 - [HAL Specification](http://stateless.co/hal_specification.html)

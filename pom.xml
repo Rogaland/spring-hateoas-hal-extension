@@ -163,9 +163,9 @@
 
     <distributionManagement>
         <repository>
-            <id>bintray-jarlehansen-maven</id>
-            <name>jarlehansen-maven</name>
-            <url>https://api.bintray.com/maven/jarlehansen/maven/spring-hateoas-hal-extension/;publish=1</url>
+            <id>bintray-rfkikt-maven</id>
+            <name>rfkikt-maven</name>
+            <url>https://api.bintray.com/maven/rfkikt/maven/spring-hateoas-hal-extension/;publish=1</url>
         </repository>
     </distributionManagement>
 

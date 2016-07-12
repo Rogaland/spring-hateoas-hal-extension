@@ -1,0 +1,208 @@
+= Spring HATEOAS HAL extension
+Frode Sjovatsen <frode@sjovatsen.net>; Jarle Hansen <jarle@jarlehansen.net>
+:doctype: book
+:icons: font
+:source-highlighter: highlightjava
+:toc:
+:toclevels: 4
+:seclinks:
+
+This project is a small extension to the http://projects.spring.io/spring-hateoas/[Spring HATEOAS].
+It adds support for http://stateless.co/hal_specification.html[HAL - Hypertext Application Language].
+
+**Features**:
+
+* Simple setup of pagination without the need to manually handle the return values
+* Adding HAL links for self, next, previous, first and last
+* Will automatically wrap your custom objects with the HAL links when using ResponseEntity
+
+== Installation
+
+In addition to adding the standard http://projects.spring.io/spring-hateoas/[Spring HATEOAS dependencies],
+you will need to include a maven repository in the build script to use the Spring HATEOAS HAL extension.
+
+=== Gradle
+
+[source,xml]
+.build.gradle
+
+----
+repositories {
+    maven {
+        url  "http://dl.bintray.com/jarlehansen/maven"
+    }
+}
+----
+
+----
+compile('no.rogfk:spring-hateoas-hal-extension:0.0.5')
+----
+=== Maven
+
+[source,xml]
+.pom.xml
+
+----
+<repositories>
+    <repository>
+        <snapshots>
+            <enabled>false</enabled>
+        </snapshots>
+        <id>bintray-jarlehansen-maven</id>
+        <name>bintray</name>
+        <url>http://dl.bintray.com/jarlehansen/maven</url>
+    </repository>
+</repositories>
+----
+
+----
+<dependency>
+    <groupId>no.rogfk</groupId>
+    <artifactId>spring-hateoas-hal-extension</artifactId>
+    <version>0.0.5</version>
+</dependency>
+----
+
+== Usage
+
+=== @EnableHalHypermediaSupport
+
+It is recommended to use the annotation `@EnableHalHypermediaSupport`. It will enable the hypermedia support in Spring HATEOAS
+(http://docs.spring.io/spring-hateoas/docs/0.19.0.RELEASE/reference/html/#configuration.at-enable[docs]) and the Spring HATEOAS HAL extension.
+When you use this annotation there is no need to add `@EnableHalExtension`.
+
+If you do not want to enable the Spring HATEOAS hypermedia support, it is possible to enable this extension by using `@EnableHalExtension`.
+
+[[app-listing]]
+[source,java]
+.myapplication.java
+
+----
+@EnableHalHypermediaSupport
+@SpringBootApplication
+public class MyApplication {
+
+    public static void main(String[] args) {
+        SpringApplication.run(Application.class, args);
+    }
+}
+----
+
+
+=== @HalResource and the HalResource class
+
+Annotate the methods in the RestController with the `@HalResource` annotation.
+The return value can be your own class wrapped in a `ResponseEntity` or the class `HalPagedResource`.
+When returning `ResponseEntity`, make sure you also include the `@RequestParam` int page. This keeps track of the page number automatically for you.
+
+[[app-listing]]
+[source,java]
+.mycontroller.java
+----
+@HalResource(pageSize = 5)
+@RequestMapping("/list")
+ResponseEntity<List<TestDto>> getList(@RequestParam int page) {
+    return ResponseEntity.ok([TestDto.create(), TestDto.create()])
+}
+----
+
+By using the `HalResource` as the returning class of the method you have more control. The `HalResource`
+constructor has two parameters:
+
+. `List<T>`:  List of returning resources.
+. `Integer`:  The current page number. If `null` it defaults to 1.
+
+[[app-listing]]
+[source,java]
+.mycontroller.java
+
+----
+@HalPesource(pageSize = 25)
+@RequestMapping(value = "/mypath", method = RequestMethod.GET,
+                produces = MediaType.APPLICATION_JSON_VALUE)
+public HalResource<UserReport> getReport(@RequestParam(required = false) Integer page) {
+        List<MyResources> myResources = MyResourceService.getMyResources();
+
+        return new HalResources<>(myResources, page);
+}
+----
+
+.Table @HalResource configuration
+|===
+|Annotation config |Description |Default value
+
+|pageSize 
+|The number of results returned for each page
+|20
+
+|allowClientPageSize
+|Allow clients to configure the page size by sending in a pageSize query param
+|true
+
+|maxPageSize
+|If clients are allowed to alter the page size, this is a max value. The returned pageSize will never be larger than the maxPageSize
+|-1 (disabled)
+
+|allowedQueryParams
+|The query params that will be included in the HAL generated links. Useful if the client requires certain query params to function
+|{} (empty list
+
+|allowAllQueryParams
+|Allow all query params sent from the client to be included in the generated HAL links
+|false
+|===
+
+When using the `@HalResource` on your controller method, the result is that the pagination properties are added for you (with self, next, prev, last, first).
+
+[[app-listing]]
+[source,json]
+
+----
+{
+    page_size: 5,
+    total_items: 100,
+    page_count: 20,
+    page: 1,
+    _links: {
+        self: {
+            href: "/mypath?page=1"
+        },
+        first: {
+            href: "/mypath"
+        },
+        next: {
+            href: "/mypath?page=2"
+        },
+        prev: {
+            href: "/mypath?page=1"
+        },
+        last: {
+            href: "/mypath?page=20"
+        }
+    },
+    _embedded: {
+        myResourceList: [
+            {
+                id: "1",
+                name: "resouce 1"
+            },
+            {
+                id: "2",
+                name: "resouce 2"
+            },
+            {
+                id: "3",
+                name: "resouce 3"
+            },
+            {
+                id: "4",
+                name: "resouce 4"
+            },
+            {
+                id: "5",
+                name: "resouce 5"
+            }
+        ]
+    }
+}
+----

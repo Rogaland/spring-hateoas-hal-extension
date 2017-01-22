@@ -1,6 +1,6 @@
 # Spring HATEOAS HAL extension
 
-[![Build Status](https://travis-ci.org/Rogaland/spring-hateoas-hal-extension.svg?branch=master)](https://travis-ci.org/Rogaland/spring-hateoas-hal-extension)
+[![Build Status](https://jenkins.rogfk.no/buildStatus/icon?job=Rogaland fylkeskommune/spring-hateoas-hal-extension/master)](https://jenkins.rogfk.no/job/Rogaland%20fylkeskommune/job/spring-hateoas-hal-extension/job/master/)
 
 Small extension to Spring HATEOAS that enables HAL collections.  
 Go to the [reference documentation](http://rogaland.github.io/spring-hateoas-hal-extension) for detailed information.
